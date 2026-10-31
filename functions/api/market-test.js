@@ -33,6 +33,21 @@ export async function onRequestGet(context) {
     }
   }
 
+try {
+  const goldResponse = await fetch("https://api.gold-api.com/price/XAU");
+  const goldData = await goldResponse.json();
+
+  results.GOLD = {
+    symbol: "XAU",
+    status: goldResponse.status,
+    data: { c: goldData.price }
+  };
+} catch (error) {
+  results.GOLD = {
+    symbol: "XAU",
+    status: 500,
+    error: error.message
+  };
   return Response.json(results, {
     headers: { "Cache-Control": "no-store" }
   });
