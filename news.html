@@ -297,22 +297,22 @@ footer {
   <div class="market-grid">
     <div class="market-card">
       <small>GOLD · XAUUSD</small>
-      <h2>--</h2>
+      <h2 id="goldPrice">--</h2>
       <span class="subtitle">Waiting for live data</span>
     </div>
     <div class="market-card">
       <small>US DOLLAR · DXY</small>
-      <h2>--</h2>
+      <h2 id="dxyPrice">--</h2>
       <span class="subtitle">Waiting for live data</span>
     </div>
     <div class="market-card">
       <small>BITCOIN · BTC</small>
-      <h2>--</h2>
+      <h2 id="btcPrice">--</h2>
       <span class="subtitle">Waiting for live data</span>
     </div>
     <div class="market-card">
       <small>CRUDE OIL · WTI</small>
-      <h2>--</h2>
+      <h2 id="wtiPrice">--</h2>
       <span class="subtitle">Waiting for live data</span>
     </div>
   </div>
@@ -498,6 +498,34 @@ function renderNews(category = "ALL") {
   `).join("");
 }
 
+async function loadMarketOverview() {
+  try {
+    const response = await fetch("/api/market-test");
+    if (!response.ok) throw new Error("Market API error: " + response.status);
+
+    const result = await response.json();
+
+    const updatePrice = (id, item, formatter = value => value.toLocaleString("en-US")) => {
+      const element = document.getElementById(id);
+      if (!element) return;
+
+      const price = item?.data?.c;
+      if (item?.status === 200 && Number.isFinite(price) && price > 0) {
+        element.textContent = formatter(price);
+      } else {
+        element.textContent = "--";
+      }
+    };
+
+    updatePrice("goldPrice", result.GOLD);
+    updatePrice("dxyPrice", result.DXY);
+    updatePrice("btcPrice", result.BTC, value => "$" + value.toLocaleString("en-US", {maximumFractionDigits: 2}));
+    updatePrice("wtiPrice", result.WTI);
+  } catch (error) {
+    console.error("Market Overview:", error);
+  }
+}
+
 async function loadNews() {
   newsList.innerHTML = '<p class="subtitle">Loading latest market news...</p>';
 
@@ -529,7 +557,9 @@ filters.forEach(button => {
 });
 
 loadNews();
+loadMarketOverview();
 setInterval(loadNews, 5 * 60 * 1000);
+setInterval(loadMarketOverview, 60 * 1000);
 </script>
 
 </body>
