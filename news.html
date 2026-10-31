@@ -477,7 +477,7 @@ async function loadNews() {
   newsList.innerHTML = '<p class="subtitle">Loading latest market news...</p>';
 
   try {
-    const response = await fetch("/.netlify/functions/news");
+    const response = await fetch("/api/news");
     if (!response.ok) throw new Error("News API error: " + response.status);
 
     const data = await response.json();
