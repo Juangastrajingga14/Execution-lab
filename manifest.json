@@ -1,0 +1,9 @@
+{
+  "name": "Juang Trading Journal",
+  "short_name": "Juang Journal",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#101827",
+  "theme_color": "#101827",
+  "orientation": "portrait"
+}+

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1220">
+<title>EXECUTION LAB | Market News</title>
+
+<style>
+:root {
+  --bg:#0b1220;
+  --panel:#121d2e;
+  --panel2:#172438;
+  --border:#26364d;
+  --text:#edf3fc;
+  --muted:#8fa1b8;
+  --green:#35d69a;
+  --red:#ff626f;
+  --yellow:#f4c45e;
+}
+
+* {box-sizing:border-box}
+
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+}
+
+header {
+  padding:18px 5%;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:15px;
+}
+
+.brand {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-weight:800;
+  letter-spacing:1px;
+}
+.brand-info {
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.brand-info strong {
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:1px;
+}
+
+.brand-info small {
+  font-size:9px;
+  color:var(--muted);
+  letter-spacing:1.5px;
+}
+.brand img {
+  width:90px;
+  height:90px;
+  object-fit:contain;
+  flex-shrink:0;
+}
+.brand span {color:var(--green)}
+
+nav {display:flex;gap:20px;flex-wrap:wrap}
+
+nav a {
+  color:var(--muted);
+  text-decoration:none;
+  font-size:13px;
+}
+
+nav a.active {color:var(--green)}
+
+.container {
+  width:90%;
+  max-width:1200px;
+  margin:30px auto;
+}
+
+.page-title {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:25px;
+}
+
+h1 {font-size:27px;margin:0}
+.subtitle {color:var(--muted);font-size:13px;margin-top:7px}
+
+.live {
+  color:var(--green);
+  font-size:11px;
+  letter-spacing:1px;
+}
+
+.section-title {
+  font-size:14px;
+  letter-spacing:1px;
+  margin:30px 0 15px;
+}
+
+.market-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+.market-card,.card {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px;
+}
+
+.market-card small {
+  color:var(--muted);
+  font-size:11px;
+}
+
+.market-card h2 {
+  font-size:21px;
+  margin:12px 0 6px;
+}
+
+.up {color:var(--green)}
+.down {color:var(--red)}
+
+.toolbar {
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+
+.filter {
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--muted);
+  padding:9px 14px;
+  border-radius:7px;
+  cursor:pointer;
+}
+
+.filter.active {
+  background:#17372f;
+  border-color:var(--green);
+  color:var(--green);
+}
+
+.news-layout {
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:15px;
+}
+
+.news-item {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:12px;
+}
+
+.news-meta {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  color:var(--muted);
+  font-size:11px;
+  margin-bottom:13px;
+}
+
+.news-item h3 {
+  font-size:17px;
+  line-height:1.5;
+  margin:0 0 10px;
+}
+
+.news-item p {
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.7;
+  margin:0 0 14px;
+}
+
+.tag {
+  font-size:10px;
+  padding:5px 8px;
+  border-radius:5px;
+  background:var(--panel2);
+  color:var(--muted);
+}
+
+.impact {
+  font-size:10px;
+  font-weight:bold;
+}
+
+.high {color:var(--red)}
+.medium {color:var(--yellow)}
+.low {color:var(--green)}
+
+.side-card {margin-bottom:14px}
+
+.side-card h3 {
+  font-size:14px;
+  margin:0 0 15px;
+}
+
+.term {
+  border-bottom:1px solid var(--border);
+  padding:12px 0;
+  font-size:12px;
+}
+
+.term:last-child {border:0}
+.term strong {color:var(--green)}
+.term p {color:var(--muted);line-height:1.5;margin:6px 0 0}
+
+footer {
+  text-align:center;
+  padding:30px;
+  color:var(--muted);
+  font-size:11px;
+  border-top:1px solid var(--border);
+  margin-top:40px;
+}
+
+@media(max-width:750px) {
+  .market-grid {grid-template-columns:repeat(2,1fr)}
+  .news-layout {grid-template-columns:1fr}
+  header {padding:15px 5%}
+  nav {gap:13px}
+  .container {margin:22px auto}
+  h1 {font-size:23px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="brand">
+  <img src="assets/execution-lab-logo.png" alt="Execution Lab">
+  <div class="brand-info">
+    <strong>EXECUTION <span>LAB</span></strong>
+    <small>PLAN / ANALYZE / EXECUTE / IMPROVE</small>
+  </div>
+</div>
+
+
+
+<main class="container"></header>
+<nav style="display:flex;gap:12px;flex-wrap:wrap;padding:15px 5%;border-bottom:1px solid #26364d">
+  <a href="index-new.html" style="color:#8fa1b8;text-decoration:none;padding:9px 14px;border:1px solid #26364d;border-radius:7px">TRADING JOURNAL</a>
+  <a href="news.html" style="color:#35d69a;text-decoration:none;padding:9px 14px;border:1px solid #35d69a;border-radius:7px">MARKET NEWS</a>
+</nav>
+
+<main class="container">
+
+  <div class="page-title">
+    <div>
+      <h1>GLOBAL MARKET NEWS</h1>
+      <div class="subtitle">Stay informed. Understand the market. Execute with context.</div>
+    </div>
+    <div class="live">● MARKET INTELLIGENCE</div>
+  </div>
+
+  <h2 class="section-title">MARKET OVERVIEW</h2>
+
+  <div class="market-grid">
+    <div class="market-card">
+      <small>GOLD · XAUUSD</small>
+      <h2>--</h2>
+      <span class="subtitle">Waiting for live data</span>
+    </div>
+    <div class="market-card">
+      <small>US DOLLAR · DXY</small>
+      <h2>--</h2>
+      <span class="subtitle">Waiting for live data</span>
+    </div>
+    <div class="market-card">
+      <small>BITCOIN · BTC</small>
+      <h2>--</h2>
+      <span class="subtitle">Waiting for live data</span>
+    </div>
+    <div class="market-card">
+      <small>CRUDE OIL · WTI</small>
+      <h2>--</h2>
+      <span class="subtitle">Waiting for live data</span>
+    </div>
+  </div>
+
+  <h2 class="section-title">LATEST MARKET NEWS</h2>
+
+  <div class="toolbar">
+    <button class="filter active" data-filter="ALL">ALL</button>
+    <button class="filter" data-filter="FOREX">FOREX</button>
+    <button class="filter" data-filter="GOLD">GOLD</button>
+    <button class="filter" data-filter="CRYPTO">CRYPTO</button>
+    <button class="filter" data-filter="ECONOMY">ECONOMY</button>
+  </div>
+
+  <div class="news-layout">
+    <section id="newsList">
+
+      <article class="news-item" data-category="GOLD">
+        <div class="news-meta">
+          <span>GOLD · MARKET ANALYSIS</span>
+          <span class="impact high">HIGH IMPACT</span>
+        </div>
+        <h3>Gold Market Update</h3>
+        <p>Berita dan perkembangan terbaru pasar emas akan ditampilkan di sini setelah sumber berita terhubung.</p>
+        <span class="tag">GOLD</span>
+      </article>
+
+      <article class="news-item" data-category="FOREX">
+        <div class="news-meta">
+          <span>FOREX · CURRENCY</span>
+          <span class="impact medium">MEDIUM IMPACT</span>
+        </div>
+        <h3>Global Currency Update</h3>
+        <p>Update mengenai pergerakan mata uang utama, DXY, dan sentimen pasar global.</p>
+        <span class="tag">FOREX</span>
+      </article>
+
+      <article class="news-item" data-category="ECONOMY">
+        <div class="news-meta">
+          <span>ECONOMY · CENTRAL BANK</span>
+          <span class="impact high">HIGH IMPACT</span>
+        </div>
+        <h3>Economic Data & Central Bank Watch</h3>
+        <p>Informasi seputar inflasi, suku bunga, kebijakan bank sentral, dan data ekonomi penting.</p>
+        <span class="tag">ECONOMY</span>
+      </article>
+
+      <article class="news-item" data-category="CRYPTO">
+        <div class="news-meta">
+          <span>CRYPTO · DIGITAL ASSETS</span>
+          <span class="impact medium">MEDIUM IMPACT</span>
+        </div>
+        <h3>Crypto Market Update</h3>
+        <p>Perkembangan Bitcoin, aset digital, dan sentimen pasar cryptocurrency.</p>
+        <span class="tag">CRYPTO</span>
+      </article>
+
+    </section>    <aside>
+
+      <div class="card side-card">
+        <h3>ECONOMIC CALENDAR</h3>
+        <p class="subtitle">Jadwal data ekonomi akan ditampilkan di sini.</p>
+
+        <div class="term">
+          <strong>US CPI</strong>
+          <p>Consumer Price Index · Jadwal menunggu integrasi data</p>
+        </div>
+
+        <div class="term">
+          <strong>FOMC</strong>
+          <p>Federal Reserve Meeting · Jadwal menunggu integrasi data</p>
+        </div>
+
+        <div class="term">
+          <strong>US NFP</strong>
+          <p>Non-Farm Payrolls · Jadwal menunggu integrasi data</p>
+        </div>
+      </div>
+
+      <div class="card side-card">
+        <h3>MARKET TERMS</h3>
+
+        <div class="term">
+          <strong>HAWKISH</strong>
+          <p>Sikap bank sentral yang cenderung mendukung suku bunga lebih tinggi.</p>
+        </div>
+
+        <div class="term">
+          <strong>DOVISH</strong>
+          <p>Sikap bank sentral yang cenderung mendukung kebijakan moneter lebih longgar.</p>
+        </div>
+
+        <div class="term">
+          <strong>INFLATION</strong>
+          <p>Kenaikan harga barang dan jasa secara umum.</p>
+        </div>
+
+        <div class="term">
+          <strong>YIELD</strong>
+          <p>Tingkat imbal hasil obligasi atau instrumen investasi.</p>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+</main>
+
+<footer>
+  EXECUTION LAB · MARKET INTELLIGENCE
+  <p>For educational and informational purposes only.</p>
+</footer>
+
+<script>
+const newsList = document.getElementById("newsList");
+const filters = document.querySelectorAll(".filter");
+let allNews = [];
+
+function escapeHTML(value = "") {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[char]);
+}
+
+function getCategory(item) {
+  const text = (item.headline + " " + item.summary).toLowerCase();
+
+  if (/gold|bullion|xau|precious metal/.test(text)) return "GOLD";
+  if (/bitcoin|crypto|ethereum|blockchain/.test(text)) return "CRYPTO";
+  if (/forex|currency|dollar|euro|yen|exchange rate|usd|eur/.test(text)) return "FOREX";
+  return "ECONOMY";
+}
+
+function formatDate(timestamp) {
+  if (!timestamp) return "Latest";
+  return new Date(timestamp * 1000).toLocaleString("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function renderNews(category = "ALL") {
+  const filtered = allNews.filter(item =>
+    category === "ALL" || item.category === category
+  );
+
+  if (!filtered.length) {
+    newsList.innerHTML = '<p class="subtitle">Belum ada berita untuk kategori ini.</p>';
+    return;
+  }
+
+  newsList.innerHTML = filtered.map(item => `
+    <article class="news-item" data-category="${item.category}">
+      <div class="news-meta">
+        <span>${escapeHTML(item.source || "Market News")} · ${item.category}</span>
+        <span class="impact medium">LATEST</span>
+      </div>
+      <h3>${escapeHTML(item.headline || "Untitled")}</h3>
+      <p>${escapeHTML(item.summary || "Tidak ada ringkasan tersedia.")}</p>
+      <div class="news-meta">
+        <span>${formatDate(item.datetime)}</span>
+        <a href="${escapeHTML(item.url || "#")}" target="_blank" rel="noopener noreferrer">READ ARTICLE ↗</a>
+      </div>
+      <span class="tag">${item.category}</span>
+    </article>
+  `).join("");
+}
+
+async function loadNews() {
+  newsList.innerHTML = '<p class="subtitle">Loading latest market news...</p>';
+
+  try {
+    const response = await fetch("/.netlify/functions/news");
+    if (!response.ok) throw new Error("News API error: " + response.status);
+
+    const data = await response.json();
+    if (!Array.isArray(data)) throw new Error(data.error || "Invalid news data");
+
+    allNews = data.map(item => ({
+      ...item,
+      category: getCategory(item)
+    }));
+
+    renderNews();
+  } catch (error) {
+    newsList.innerHTML = '<p class="subtitle">News belum dapat dimuat. Periksa koneksi atau konfigurasi API.</p>';
+    console.error(error);
+  }
+}
+
+filters.forEach(button => {
+  button.addEventListener("click", () => {
+    filters.forEach(item => item.classList.remove("active"));
+    button.classList.add("active");
+    renderNews(button.dataset.filter);
+  });
+});
+
+loadNews();
+setInterval(loadNews, 5 * 60 * 1000);
+</script>
+
+</body>
+</html>
