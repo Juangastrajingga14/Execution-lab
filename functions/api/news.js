@@ -13,12 +13,11 @@ export async function onRequestGet(context) {
       `https://finnhub.io/api/v1/news?category=general&token=${API_KEY}`
     );
 
-    if (!response.ok) throw new Error("Gagal mengambil berita");
+    if (!response.ok) {
+      throw new Error("Gagal mengambil berita");
+    }
 
     const data = await response.json();
-  "https://api.mymemory.translated.net/get?q=Gold%20prices%20rise%20today&langpair=en|id"
-);
-
 
     const translated = await Promise.all(
       data.slice(0, 15).map(async (news) => {
@@ -54,14 +53,19 @@ async function translate(text) {
     );
 
     if (!response.ok) {
-  console.error("MyMemory HTTP:", response.status);
-  return text;
-}
+      console.error("MyMemory HTTP:", response.status);
+      return text;
+    }
 
     const result = await response.json();
-if (result.responseStatus !== 200) {
-  console.error("MyMemory API:", result.responseStatus, result.responseDetails);
-}
+
+    if (result.responseStatus !== 200) {
+      console.error(
+        "MyMemory API:",
+        result.responseStatus,
+        result.responseDetails
+      );
+    }
 
     return result.responseStatus === 200
       ? result.responseData?.translatedText || text
