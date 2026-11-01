@@ -269,11 +269,7 @@ export async function onRequestPost({ request, env }) {
 
     return json({ error: "Action tidak valid" }, 400);
 
-  } catch (error) {
+    } catch (error) {
     console.error("AUTH ERROR:", error);
-
-    return json({
-      error: "Terjadi kesalahan server"
-    }, 500);
+    return json({ error: error.message || String(error) }, 500);
   }
-}
