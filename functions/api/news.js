@@ -50,9 +50,15 @@ async function translate(text) {
       "&langpair=en|id"
     );
 
-    if (!response.ok) return text;
+    if (!response.ok) {
+  console.error("MyMemory HTTP:", response.status);
+  return text;
+}
 
     const result = await response.json();
+if (result.responseStatus !== 200) {
+  console.error("MyMemory API:", result.responseStatus, result.responseDetails);
+}
 
     return result.responseStatus === 200
       ? result.responseData?.translatedText || text
