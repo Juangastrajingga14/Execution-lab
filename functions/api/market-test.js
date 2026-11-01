@@ -2,7 +2,9 @@ export async function onRequestGet(context) {
   const API_KEY = context.env.FINNHUB_API_KEY;
 
   if (!API_KEY) {
-    return Response.json({ error: "FINNHUB_API_KEY belum terpasang" });
+    return Response.json({
+      error: "FINNHUB_API_KEY belum terpasang"
+    });
   }
 
   const symbols = {
@@ -33,22 +35,26 @@ export async function onRequestGet(context) {
     }
   }
 
-try {
-  const goldResponse = await fetch("https://api.gold-api.com/price/XAU");
-  const goldData = await goldResponse.json();
+  try {
+    const goldResponse = await fetch(
+      "https://api.gold-api.com/price/XAU"
+    );
+    const goldData = await goldResponse.json();
 
-  results.GOLD = {
-    symbol: "XAU",
-    status: goldResponse.status,
-    data: { c: goldData.price }
-  };
-} catch (error) {
-  results.GOLD = {
-    symbol: "XAU",
-    status: 500,
-    error: error.message
-  };
+    results.GOLD = {
+      symbol: "XAU",
+      status: goldResponse.status,
+      data: { c: goldData.price }
+    };
+  } catch (error) {
+    results.GOLD = {
+      symbol: "XAU",
+      status: 500,
+      error: error.message
+    };
+  }
+
   return Response.json(results, {
     headers: { "Cache-Control": "no-store" }
   });
-}
+    }
