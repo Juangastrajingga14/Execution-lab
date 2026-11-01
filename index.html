@@ -70,8 +70,34 @@ canvas{width:100%;height:210px;display:block}
    <div class="sub">PLAN / ANALYZE / EXECUTE / IMPROVE</div>
   </div>
  </div>
- <div class="sub" id="storageStatus">LOCAL STORAGE ACTIVE</div>
+ <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+  <div class="sub" id="storageStatus">LOCAL STORAGE ACTIVE</div>
+  <button class="secondary" id="loginBtn" type="button">LOGIN / REGISTER</button>
+  <button class="secondary" id="logoutBtn" type="button" style="display:none">LOGOUT</button>
+  <span class="sub" id="accountName"></span>
+</div>
 </header>
+<div class="modal" id="authModal">
+ <div class="modal-box">
+  <div class="modal-top">
+   <h2 id="authTitle">LOGIN</h2>
+   <button class="secondary" id="closeAuth" type="button">CLOSE</button>
+  </div>
+  <form id="authForm">
+   <label>EMAIL</label>
+   <input id="authEmail" type="email" required>
+   <div id="registerFields" style="display:none">
+    <label>USERNAME</label>
+    <input id="authUsername" type="text" minlength="3" maxlength="24">
+   </div>
+   <label>PASSWORD</label>
+   <input id="authPassword" type="password" minlength="8" required>
+   <button class="primary" id="authSubmit" type="submit">LOGIN</button>
+  </form>
+  <p id="authSwitch" class="sub">Belum punya akun? REGISTER</p>
+  <p id="authMessage" class="sub"></p>
+ </div>
+</div>
 <nav style="display:flex;gap:12px;flex-wrap:wrap;padding:15px 0;border-bottom:1px solid #26364d;margin-bottom:20px">
   <a href="index-new.html" style="color:#35d69a;text-decoration:none;padding:9px 14px;border:1px solid #35d69a;border-radius:7px">TRADING JOURNAL</a>
   <a href="news.html" style="color:#8fa1b8;text-decoration:none;padding:9px 14px;border:1px solid #26364d;border-radius:7px">MARKET NEWS</a>
@@ -558,7 +584,105 @@ usdIdrRate.addEventListener("input",()=>{
  localStorage.setItem("executionLabRate",usdIdrRate.value);
  if(currencySelect.value==="IDR")render();
 });
+let authMode = "login";
+let currentUser = null;
 
+function showAuth(mode = "login") {
+  authMode = mode;
+  $("authTitle").textContent = mode === "login" ? "LOGIN" : "REGISTER";
+  $("authSubmit").textContent = mode === "login" ? "LOGIN" : "REGISTER";
+  $("registerFields").style.display = mode === "register" ? "block" : "none";
+  $("authMessage").textContent = "";
+  $("authModal").style.display = "block";
+}
+
+$("loginBtn").addEventListener("click", () => showAuth("login"));
+$("closeAuth").addEventListener("click", () => {
+  $("authModal").style.display = "none";
+});
+$("authSwitch").addEventListener("click", () => {
+  showAuth(authMode === "login" ? "register" : "login");
+});
+$("logoutBtn").addEventListener("click", async () => {
+  await fetch("/api/auth", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({action: "logout"})
+  });
+  currentUser = null;
+  $("accountName").textContent = "";
+  $("logoutBtn").style.display = "none";
+  $("loginBtn").style.display = "inline-block";
+});
+
+$("authForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const data = {
+    action: authMode,
+    email: $("authEmail").value.trim(),
+    password: $("authPassword").value
+  };
+
+  if (authMode === "register") {
+    data.username = $("authUsername").value.trim();
+  }
+
+  $("authSubmit").disabled = true;
+  $("authMessage").textContent = "Please wait...";
+
+  try {
+    const response = await fetch("/api/auth", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) throw new Error(result.error || "Request failed");
+
+    if (authMode === "register") {
+      $("authMessage").textContent = "Registrasi berhasil. Silakan login.";
+      showAuth("login");
+      $("authEmail").value = data.email;
+    } else {
+      currentUser = result.user;
+      $("accountName").textContent = currentUser.username;
+      $("loginBtn").style.display = "none";
+      $("logoutBtn").style.display = "inline-block";
+      $("authModal").style.display = "none";
+      $("authForm").reset();
+      alert("Login berhasil!");
+    }
+  } catch (error) {
+    $("authMessage").textContent = error.message;
+  } finally {
+    $("authSubmit").disabled = false;
+  }
+});
+
+async function checkAuth() {
+  try {
+    const response = await fetch("/api/auth", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({action: "me"})
+    });
+
+    const result = await response.json();
+
+    if (result.authenticated) {
+      currentUser = result.user;
+      $("accountName").textContent = currentUser.username;
+      $("loginBtn").style.display = "none";
+      $("logoutBtn").style.display = "inline-block";
+    }
+  } catch (error) {
+    console.error("Auth check failed:", error);
+  }
+}
+checkAuth();
 load();
 render();
 
