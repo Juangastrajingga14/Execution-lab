@@ -1,4 +1,3 @@
-
 export async function onRequestGet(context) {
   const API_KEY = context.env.FINNHUB_API_KEY;
 
@@ -14,33 +13,23 @@ export async function onRequestGet(context) {
       `https://finnhub.io/api/v1/news?category=general&token=${API_KEY}`
     );
 
-    if (!response.ok) {
-      throw new Error("Gagal mengambil berita");
-    }
+    if (!response.ok) throw new Error("Gagal mengambil berita");
 
     const data = await response.json();
 
     const translated = await Promise.all(
       data.slice(0, 15).map(async (news) => {
-        try {
-          const title = await translate(news.headline);
-          const summary = await translate(news.summary);
+        const [headline, summary] = await Promise.all([
+          translate(news.headline),
+          translate(news.summary)
+        ]);
 
-          return {
-            ...news,
-            headline: title,
-            summary: summary
-          };
-        } catch {
-          return news;
-        }
+        return { ...news, headline, summary };
       })
     );
 
     return Response.json(translated, {
-      headers: {
-        "Cache-Control": "public, max-age=300"
-      }
+      headers: { "Cache-Control": "public, max-age=300" }
     });
 
   } catch (error) {
@@ -54,17 +43,23 @@ export async function onRequestGet(context) {
 async function translate(text) {
   if (!text) return text;
 
-  const url =
-    "https://api.mymemory.translated.net/get?q=" +
-    encodeURIComponent(text) +
-    "&langpair=en|id";
+  try {
+    const response = await fetch(
+      "https://api.mymemory.translated.net/get?q=" +
+      encodeURIComponent(text.slice(0, 450)) +
+      "&langpair=en|id"
+    );
 
-  const response = await fetch(url);
-  const result = await response.json();
+    if (!response.ok) return text;
 
-  if (result.responseStatus !== 200) {
+    const result = await response.json();
+
+    return result.responseStatus === 200
+      ? result.responseData?.translatedText || text
+      : text;
+
+  } catch (error) {
+    console.error("Translation error:", error);
     return text;
   }
-
-  return result.responseData.translatedText || text;
 }
