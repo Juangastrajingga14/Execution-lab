@@ -260,6 +260,28 @@ footer {
   .container {margin:22px auto}
   h1 {font-size:23px}
 }
+.read-article {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  padding:11px 17px;
+  background:#16a36a;
+  color:#ffffff;
+  text-decoration:none;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.5px;
+  border-radius:8px;
+  border:1px solid #25c987;
+  transition:all .2s ease;
+}
+.read-article:hover {
+  background:#128354;
+  transform:translateY(-2px);
+  box-shadow:0 5px 18px rgba(22,163,106,.25);
+}
+
 </style>
 </head>
 
@@ -290,31 +312,6 @@ footer {
       <div class="subtitle">Stay informed. Understand the market. Execute with context.</div>
     </div>
     <div class="live">● MARKET INTELLIGENCE</div>
-  </div>
-
-  <h2 class="section-title">MARKET OVERVIEW</h2>
-
-  <div class="market-grid">
-    <div class="market-card">
-      <small>GOLD · XAUUSD</small>
-      <h2 id="goldPrice">--</h2>
-      <span class="subtitle">Waiting for live data</span>
-    </div>
-    <div class="market-card">
-      <small>US DOLLAR · DXY</small>
-      <h2 id="dxyPrice">--</h2>
-      <span class="subtitle">Waiting for live data</span>
-    </div>
-    <div class="market-card">
-      <small>BITCOIN · BTC</small>
-      <h2 id="btcPrice">--</h2>
-      <span class="subtitle">Waiting for live data</span>
-    </div>
-    <div class="market-card">
-      <small>CRUDE OIL · WTI</small>
-      <h2 id="wtiPrice">--</h2>
-      <span class="subtitle">Waiting for live data</span>
-    </div>
   </div>
 
   <h2 class="section-title">LATEST MARKET NEWS</h2>
@@ -490,7 +487,7 @@ function renderNews(category = "ALL") {
 
       <div class="news-meta">
         <span>${formatDate(item.datetime)}</span>
-        <a href="${escapeHTML(item.url || "#")}" target="_blank" rel="noopener noreferrer">READ FULL ARTICLE ↗</a>
+        <a class="read-article" href="${escapeHTML(item.url || "#")}" target="_blank" rel="noopener noreferrer">READ FULL ARTICLE ↗</a>
       </div>
 
       <span class="tag">${item.category}</span>
