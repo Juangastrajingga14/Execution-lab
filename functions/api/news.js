@@ -16,6 +16,15 @@ export async function onRequestGet(context) {
     if (!response.ok) throw new Error("Gagal mengambil berita");
 
     const data = await response.json();
+const testResponse = await fetch(
+  "https://api.mymemory.translated.net/get?q=Gold%20prices%20rise%20today&langpair=en|id"
+);
+const testBody = await testResponse.text();
+
+return Response.json({
+  testStatus: testResponse.status,
+  testBody: testBody
+});
 
     const translated = await Promise.all(
       data.slice(0, 15).map(async (news) => {
