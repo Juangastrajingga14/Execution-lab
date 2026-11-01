@@ -1,13 +1,11 @@
+
 export async function onRequestGet(context) {
   const API_KEY = context.env.FINNHUB_API_KEY;
 
   if (!API_KEY) {
-    return new Response(
-      JSON.stringify({ error: "API key belum dipasang" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" }
-      }
+    return Response.json(
+      { error: "API key belum dipasang" },
+      { status: 500 }
     );
   }
 
@@ -17,27 +15,56 @@ export async function onRequestGet(context) {
     );
 
     if (!response.ok) {
-      throw new Error("Gagal mengambil berita dari Finnhub");
+      throw new Error("Gagal mengambil berita");
     }
 
     const data = await response.json();
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
+    const translated = await Promise.all(
+      data.slice(0, 15).map(async (news) => {
+        try {
+          const title = await translate(news.headline);
+          const summary = await translate(news.summary);
+
+          return {
+            ...news,
+            headline: title,
+            summary: summary
+          };
+        } catch {
+          return news;
+        }
+      })
+    );
+
+    return Response.json(translated, {
       headers: {
-        "Content-Type": "application/json",
         "Cache-Control": "public, max-age=300"
       }
     });
 
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" }
-      }
+    return Response.json(
+      { error: error.message },
+      { status: 500 }
     );
   }
 }
 
+async function translate(text) {
+  if (!text) return text;
+
+  const url =
+    "https://api.mymemory.translated.net/get?q=" +
+    encodeURIComponent(text) +
+    "&langpair=en|id";
+
+  const response = await fetch(url);
+  const result = await response.json();
+
+  if (result.responseStatus !== 200) {
+    return text;
+  }
+
+  return result.responseData.translatedText || text;
+}
