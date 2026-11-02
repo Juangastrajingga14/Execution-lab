@@ -440,13 +440,28 @@ function escapeHTML(value = "") {
 }
 
 function getCategory(item) {
-  const text = (item.headline + " " + item.summary).toLowerCase();
+  const text = (
+    (item.headline || "") + " " +
+    (item.summary || "") + " " +
+    (item.category || "")
+  ).toLowerCase();
 
-  if (/gold|bullion|xau|precious metal/.test(text)) return "GOLD";
-  if (/bitcoin|crypto|ethereum|blockchain/.test(text)) return "CRYPTO";
-  if (/forex|currency|dollar|euro|yen|exchange rate|usd|eur/.test(text)) return "FOREX";
+  if (/gold|bullion|xau|precious metal|gold price|gold futures/.test(text)) {
+    return "GOLD";
+  }
+
+  if (/bitcoin|crypto|ethereum|blockchain|btc|eth|digital asset/.test(text)) {
+    return "CRYPTO";
+  }
+
+  if (/forex|currency|dollar|euro|yen|exchange rate|usd|eur|gbp|jpy|central bank currency/.test(text)) {
+    return "FOREX";
+  }
+
   return "ECONOMY";
 }
+
+  
 
 function formatDate(timestamp) {
   if (!timestamp) return "Latest";
