@@ -72,23 +72,32 @@ export async function onRequestGet(context) {
 async function translate(text) {
   if (!text) return text;
 
+  const cleanText = String(text)
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+
   try {
     const response = await fetch(
       "https://api.mymemory.translated.net/get?q=" +
-      encodeURIComponent(text.slice(0, 450)) +
+      encodeURIComponent(cleanText.slice(0, 450)) +
       "&langpair=en|id"
     );
 
-    if (!response.ok) return text;
+    if (!response.ok) return cleanText;
 
     const result = await response.json();
 
     return result.responseStatus === 200
-      ? result.responseData?.translatedText || text
-      : text;
+      ? result.responseData?.translatedText || cleanText
+      : cleanText;
 
   } catch (error) {
     console.error("Translation error:", error);
-    return text;
+    return cleanText;
   }
 }
