@@ -273,3 +273,4 @@ export async function onRequestPost({ request, env }) {
     console.error("AUTH ERROR:", error);
     return json({ error: error.message || String(error) }, 500);
   }
+}
