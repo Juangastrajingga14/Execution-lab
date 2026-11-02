@@ -438,7 +438,10 @@ function escapeHTML(value = "") {
     "'": "&#039;"
   })[char]);
 }
-
+function cleanNewsText(value = "") {
+  const doc = new DOMParser().parseFromString(String(value), "text/html");
+  return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
+}
 function getCategory(item) { 
  if (item.marketCategory === "FOREX") return "FOREX";
   if (item.marketCategory === "CRYPTO") return "CRYPTO";
@@ -502,7 +505,7 @@ function renderNews(category = "ALL") {
       </div>
 
       <h3>${escapeHTML(item.headline || "Untitled")}</h3>
-      <p>${escapeHTML(item.summary || "Tidak ada ringkasan tersedia.")}</p>
+      <p>${escapeHTML(cleanNewsText(item.summary || "Tidak ada ringkasan tersedia."))}</p>
 
       <div class="news-meta">
         <span>${formatDate(item.datetime)}</span>
