@@ -1,4 +1,4 @@
-const ITERATIONS = 310000;
+const ITERATIONS = 100000;
 const SESSION_DAYS = 7;
 
 const json = (data, status = 200, headers = {}) =>
