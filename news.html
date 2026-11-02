@@ -439,7 +439,10 @@ function escapeHTML(value = "") {
   })[char]);
 }
 
-function getCategory(item) {
+function getCategory(item) { 
+ if (item.marketCategory === "FOREX") return "FOREX";
+  if (item.marketCategory === "CRYPTO") return "CRYPTO";
+
   const text = (
     (item.headline || "") + " " +
     (item.summary || "") + " " +

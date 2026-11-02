@@ -9,18 +9,41 @@ export async function onRequestGet(context) {
   }
 
   try {
-    const response = await fetch(
-      `https://finnhub.io/api/v1/news?category=general&token=${API_KEY}`
+    const categories = ["general", "forex", "crypto"];
+
+    const results = await Promise.all(
+      categories.map(async (category) => {
+        const response = await fetch(
+          `https://finnhub.io/api/v1/news?category=${category}&token=${API_KEY}`
+        );
+
+        if (!response.ok) {
+          throw new Error(`Finnhub ${category}: HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        return data.slice(0, 10).map(news => ({
+          ...news,
+          marketCategory:
+            category === "general"
+              ? "GENERAL"
+              : category.toUpperCase()
+        }));
+      })
     );
 
-    if (!response.ok) {
-      throw new Error("Gagal mengambil berita");
-    }
+    const unique = new Map();
 
-    const data = await response.json();
+    results.flat().forEach(news => {
+      unique.set(news.id || news.url, news);
+    });
+
+    const combined = [...unique.values()]
+      .sort((a, b) => b.datetime - a.datetime);
 
     const translated = await Promise.all(
-      data.slice(0, 15).map(async (news) => {
+      combined.map(async news => {
         const [headline, summary] = await Promise.all([
           translate(news.headline),
           translate(news.summary)
@@ -31,12 +54,16 @@ export async function onRequestGet(context) {
     );
 
     return Response.json(translated, {
-      headers: { "Cache-Control": "public, max-age=300" }
+      headers: {
+        "Cache-Control": "public, max-age=300"
+      }
     });
 
   } catch (error) {
+    console.error("NEWS ERROR:", error);
+
     return Response.json(
-      { error: error.message },
+      { error: error.message || String(error) },
       { status: 500 }
     );
   }
@@ -52,20 +79,9 @@ async function translate(text) {
       "&langpair=en|id"
     );
 
-    if (!response.ok) {
-      console.error("MyMemory HTTP:", response.status);
-      return text;
-    }
+    if (!response.ok) return text;
 
     const result = await response.json();
-
-    if (result.responseStatus !== 200) {
-      console.error(
-        "MyMemory API:",
-        result.responseStatus,
-        result.responseDetails
-      );
-    }
 
     return result.responseStatus === 200
       ? result.responseData?.translatedText || text
