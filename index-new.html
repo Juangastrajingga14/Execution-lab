@@ -608,6 +608,7 @@ $("authSwitch").addEventListener("click", () => {
 
 $("logoutBtn").addEventListener("click", async () => {
   await fetch("/api/auth", {
+    credentials: "same-origin",
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({action: "logout"})
@@ -636,6 +637,7 @@ $("authForm").addEventListener("submit", async event => {
 
   try {
     const response = await fetch("/api/auth", {
+    credentials: "same-origin",
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify(data)
@@ -666,6 +668,7 @@ $("authForm").addEventListener("submit", async event => {
 async function checkAuth() {
   try {
     const response = await fetch("/api/auth", {
+    credentials: "same-origin",
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({action: "me"})
